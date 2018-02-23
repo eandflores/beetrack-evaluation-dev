@@ -1,14 +1,21 @@
 package com.beetrack.evaluation.view;
 
 import android.app.SearchManager;
+import android.content.ComponentName;
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.customtabs.CustomTabsClient;
+import android.support.customtabs.CustomTabsIntent;
+import android.support.customtabs.CustomTabsServiceConnection;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -41,8 +48,11 @@ public class ArticlesFragment extends Fragment implements ArticlesPresenter.View
     @BindView(R.id.textview) TextView textview;
 
     private ArticlesPresenter articlesPresenter;
+    private OnArticlesFragmentInteractionListener mListener;
 
     private static final String ARG_IS_FAVORITE = "arg_is_favorite";
+    private static final String PACKAGE_NAME    = "com.android.chrome";
+
     private boolean isFavorite;
     private SearchView searchView;
     private List<Article> articles;
@@ -90,9 +100,25 @@ public class ArticlesFragment extends Fragment implements ArticlesPresenter.View
         articlesPresenter.getArticles(isFavorite);
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnArticlesFragmentInteractionListener) {
+            mListener = (OnArticlesFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString() + " must implement OnFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
     private void setupRecyclerView() {
         ArticlesAdapter adapter = new ArticlesAdapter(context());
-        adapter.setItemClickListener((Article article) -> articlesPresenter.launchArticleDetail(article));
+        adapter.setItemClickListener(this::launchArticleDetail);
         recyclerview.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerview.setAdapter(adapter);
 
@@ -105,6 +131,40 @@ public class ArticlesFragment extends Fragment implements ArticlesPresenter.View
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
         searchView.setQueryHint(getString(R.string.articles_search_hint));
         searchView.setOnQueryTextListener(this);
+    }
+
+    public void launchArticleDetail(String url) {
+        if(!TextUtils.isEmpty(url)) {
+            warmUpChrome();
+            setupWebView(url);
+        } else {
+            if (mListener != null)
+                mListener.showSnackbarUrlEmpty();
+        }
+    }
+
+    private void warmUpChrome() {
+
+        CustomTabsServiceConnection service = new CustomTabsServiceConnection() {
+            @Override
+            public void onCustomTabsServiceConnected(ComponentName name, CustomTabsClient client) {
+                client.warmup(0);
+            }
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+
+            }
+        };
+
+        CustomTabsClient.bindCustomTabsService(getActivity().getApplicationContext(),PACKAGE_NAME, service);
+    }
+
+    private void setupWebView(String url) {
+        CustomTabsIntent.Builder builder    = new CustomTabsIntent.Builder();
+        CustomTabsIntent customTabsIntent   = builder.build();
+
+        builder.setToolbarColor(ContextCompat.getColor(context(), R.color.colorPrimaryDark));
+        customTabsIntent.launchUrl(context(), Uri.parse(url));
     }
 
     @Override
@@ -210,14 +270,7 @@ public class ArticlesFragment extends Fragment implements ArticlesPresenter.View
         adapter.notifyDataSetChanged();
     }
 
-    @Override
-    public void launchArticleDetail(Article article) {
-        //Intent intent = new Intent(getContext(), ArticleDetailActivity.class);
-        //intent.putExtra(ArticleDetailActivity.EXTRA_REPOSITORY, article);
-        //startActivity(intent);
-    }
-
-    private void startActivityActionView() {
-        //startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/erikcaffrey/Android-Spotify-MVP")));
+    public interface OnArticlesFragmentInteractionListener {
+        void showSnackbarUrlEmpty();
     }
 }

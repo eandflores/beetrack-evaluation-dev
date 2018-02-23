@@ -92,7 +92,7 @@ public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.ViewHo
                     if (null != itemClickListener) {
                         // Notify the active callbacks interface (the activity, if the
                         // fragment is attached to one) that an item has been selected.
-                        itemClickListener.onItemClick(article);
+                        itemClickListener.onItemClick(article.getUrl());
                     }
                 }
             });
@@ -117,7 +117,7 @@ public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.ViewHo
     }
 
     public interface ItemClickListener {
-        void onItemClick(Article article);
+        void onItemClick(String article);
     }
 
     public void animateTo(List<Article> models) {

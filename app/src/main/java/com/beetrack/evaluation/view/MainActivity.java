@@ -1,5 +1,7 @@
 package com.beetrack.evaluation.view;
 
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 
@@ -12,7 +14,12 @@ import android.support.v7.widget.Toolbar;
 
 import com.beetrack.evaluation.R;
 
-public class MainActivity extends AppCompatActivity {
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
+public class MainActivity extends AppCompatActivity implements ArticlesFragment.OnArticlesFragmentInteractionListener {
+
+    @BindView(R.id.coordinatorlayout) CoordinatorLayout coordinatorlayout;
 
     private String[] sections;
 
@@ -24,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
 
         // Create the adapter that will return a fragment for each of the three
         SectionsPagerAdapter mSectionsPagerAdapter  = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -41,6 +49,11 @@ public class MainActivity extends AppCompatActivity {
         // Config and set up the TabLayout with the ViewPager.
         tabLayout.setTabMode(TabLayout.MODE_FIXED);
         tabLayout.setupWithViewPager(mViewPager);
+    }
+
+    @Override
+    public void showSnackbarUrlEmpty() {
+        Snackbar.make(coordinatorlayout, getString(R.string.article_empty_url), Snackbar.LENGTH_LONG).show();
     }
 
     /**

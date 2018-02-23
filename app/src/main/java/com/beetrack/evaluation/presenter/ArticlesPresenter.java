@@ -42,10 +42,6 @@ public class ArticlesPresenter extends Presenter<ArticlesPresenter.View> {
             getView().showArticleNotFoundMessage();
     }
 
-    public void launchArticleDetail(Article article) {
-        getView().launchArticleDetail(article);
-    }
-
     @Override
     public void terminate() {
         super.terminate();
@@ -65,8 +61,6 @@ public class ArticlesPresenter extends Presenter<ArticlesPresenter.View> {
         void showServerError();
 
         void renderArticles(List<Article> articles);
-
-        void launchArticleDetail(Article article);
 
     }
 }
