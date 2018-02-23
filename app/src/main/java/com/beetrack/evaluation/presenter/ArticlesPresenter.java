@@ -20,22 +20,26 @@ public class ArticlesPresenter extends Presenter<ArticlesPresenter.View> {
         this.interactor = interactor;
     }
 
-    public void getArticles() {
+    public void getArticles(boolean isFavorite) {
         getView().showLoading();
-        Disposable disposable = interactor.getArticles().subscribe(articles -> {
-            if(articles.getStatus().equals(Constants.SUCCESS_RESPONSE)) {
-                if (articles.getTotalResults() > 0) {
-                    getView().hideLoading();
-                    getView().renderArticles(articles.getArticles());
-                } else {
+
+        if(!isFavorite) {
+            Disposable disposable = interactor.getArticles().subscribe(articles -> {
+                if(articles.getStatus().equals(Constants.SUCCESS_RESPONSE)) {
+                    if (articles.getTotalResults() > 0) {
+                        getView().hideLoading();
+                        getView().renderArticles(articles.getArticles());
+                    } else {
+                        getView().showArticleNotFoundMessage();
+                    }
+                } else
                     getView().showArticleNotFoundMessage();
-                }
-            } else
-                getView().showArticleNotFoundMessage();
 
-        }, Throwable::printStackTrace);
+            }, Throwable::printStackTrace);
 
-        addDisposableObserver(disposable);
+            addDisposableObserver(disposable);
+        } else
+            getView().showArticleNotFoundMessage();
     }
 
     public void launchArticleDetail(Article article) {

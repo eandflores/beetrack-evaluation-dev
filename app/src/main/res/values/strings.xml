@@ -13,6 +13,7 @@
 
     <!-- artists -->
     <string name="articles_empty">No hay elementos que mostrar</string>
+    <string name="articles_loading">Cargando...</string>
     <string name="articles_search_hint">Buscar</string>
     <string name="articles_source_hint">Fuente</string>
     <string name="articles_title_hint">Título</string>

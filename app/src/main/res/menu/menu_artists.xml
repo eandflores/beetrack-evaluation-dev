@@ -4,8 +4,8 @@
 
     <item
         android:id="@+id/action_search"
-        android:title="@string/articles_search_hint"
+        android:orderInCategory="1"
         app:actionViewClass="android.support.v7.widget.SearchView"
-        app:showAsAction="always" />
+        app:showAsAction="always"/>
 
 </menu>

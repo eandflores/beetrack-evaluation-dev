@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 
 import com.beetrack.evaluation.R;
 
@@ -33,6 +34,10 @@ public class MainActivity extends AppCompatActivity {
         // Set up the ViewPager with the sections adapter.
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
+        // Set up the Toolbar
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
         // Config and set up the TabLayout with the ViewPager.
         tabLayout.setTabMode(TabLayout.MODE_FIXED);
         tabLayout.setupWithViewPager(mViewPager);
@@ -52,9 +57,9 @@ public class MainActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             switch (position) {
-                case 0  : return ArticlesFragment.newInstance();
-//                case 1  : return FavoritesFragment.newInstance();
-                default : return ArticlesFragment.newInstance();
+                case 0  : return ArticlesFragment.newInstance(false);
+                case 1  : return ArticlesFragment.newInstance(true);
+                default : return ArticlesFragment.newInstance(false);
             }
         }
 

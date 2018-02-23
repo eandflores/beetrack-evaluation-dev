@@ -13,12 +13,12 @@ import com.beetrack.evaluation.R;
 import com.beetrack.evaluation.model.Article;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link Article} and makes a call to the
@@ -104,6 +104,10 @@ public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.ViewHo
         return articles.size();
     }
 
+    public List<Article> getArticles() {
+        return this.articles;
+    }
+
     public void setArticles(List<Article> articles) {
         this.articles = articles;
     }
@@ -114,5 +118,86 @@ public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.ViewHo
 
     public interface ItemClickListener {
         void onItemClick(Article article);
+    }
+
+    public void animateTo(List<Article> models) {
+        applyAndAnimateRemovals(models);
+        applyAndAnimateAdditions(models);
+        applyAndAnimateMovedItems(models);
+    }
+
+    private void applyAndAnimateRemovals(List<Article> newModels) {
+        for (int i = articles.size() - 1; i >= 0; i--) {
+            final Article model = articles.get(i);
+            if (!newModels.contains(model)) {
+                removeItem(i);
+            }
+        }
+    }
+
+    private void applyAndAnimateAdditions(List<Article> newModels) {
+        for (int i = 0, count = newModels.size(); i < count; i++) {
+            final Article model = newModels.get(i);
+            if (!articles.contains(model)) {
+                addItem(i, model);
+            }
+        }
+    }
+
+    private void applyAndAnimateMovedItems(List<Article> newModels) {
+        for (int toPosition = newModels.size() - 1; toPosition >= 0; toPosition--) {
+            final Article model = newModels.get(toPosition);
+            final int fromPosition = articles.indexOf(model);
+            if (fromPosition >= 0 && fromPosition != toPosition) {
+                moveItem(fromPosition, toPosition);
+            }
+        }
+    }
+
+    public Article removeItem(int position) {
+        final Article model = articles.remove(position);
+        notifyItemRemoved(position);
+        return model;
+    }
+
+    public void addItem(int position, Article model) {
+        articles.add(position, model);
+        notifyItemInserted(position);
+    }
+
+    public void moveItem(int fromPosition, int toPosition) {
+        final Article model = articles.remove(fromPosition);
+        articles.add(toPosition, model);
+        notifyItemMoved(fromPosition, toPosition);
+    }
+
+    public List<Article> filter(List<Article> models, String query) {
+        query = query.toLowerCase();
+
+        final List<Article> filteredModelList = new ArrayList<>();
+        for (Article article : models) {
+            String text  = "";
+
+            if(article.getTitle() != null)
+                text    += article.getTitle().toLowerCase();
+
+            if(article.getAuthor() != null)
+                text    += article.getAuthor().toLowerCase();
+
+            if(article.getSource() != null) {
+                if (article.getSource().getName() != null)
+                    text += article.getSource().getName();
+            }
+
+            if(article.getPublishedAt() != null) {
+                DateFormat df = new android.text.format.DateFormat();
+                text    += df.format("yyyy-MM-dd HH:mm", article.getPublishedAt());
+            }
+
+            if (text.contains(query))
+                filteredModelList.add(article);
+
+        }
+        return filteredModelList;
     }
 }
