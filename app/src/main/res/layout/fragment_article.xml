@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    card_view:cardUseCompatPadding="true"
+    card_view:cardElevation="@dimen/card_elevation" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/recyclerview_margin"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textviewSource"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/articles_source_hint"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/textviewTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/articles_title_hint"/>
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/articles_imageview_height">
+
+            <ImageView
+                android:id="@+id/imageviewArticle"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:background="@color/colorAccent"/>
+
+            <ImageView
+                android:id="@+id/imageviewStar"
+                android:layout_width="@dimen/articles_star_size"
+                android:layout_height="@dimen/articles_star_size"
+                android:layout_alignParentRight="true"
+                android:layout_margin="@dimen/recyclerview_margin"/>
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/recyclerview_margin"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textviewDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minLines="2"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:hint="@string/articles_description_hint"
+                android:textStyle="bold"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="1">
+
+                <TextView
+                    android:id="@+id/textviewAuthor"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:hint="@string/articles_author_hint"
+                    android:gravity="left"/>
+
+                <TextView
+                    android:id="@+id/textviewPublished"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:hint="@string/articles_published_hint"
+                    android:gravity="right"/>
+
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</android.support.v7.widget.CardView>

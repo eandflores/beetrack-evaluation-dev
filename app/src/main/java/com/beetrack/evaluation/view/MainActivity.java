@@ -1,0 +1,71 @@
+package com.beetrack.evaluation.view;
+
+import android.support.design.widget.TabLayout;
+import android.support.v7.app.AppCompatActivity;
+
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.os.Bundle;
+
+import com.beetrack.evaluation.R;
+
+public class MainActivity extends AppCompatActivity {
+
+    private String[] sections;
+
+    /**
+     * The {@link ViewPager} that will host the section contents.
+     */
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        // Create the adapter that will return a fragment for each of the three
+        SectionsPagerAdapter mSectionsPagerAdapter  = new SectionsPagerAdapter(getSupportFragmentManager());
+        sections                                    = getResources().getStringArray(R.array.sections);
+        ViewPager mViewPager                        = (ViewPager) findViewById(R.id.container);
+        TabLayout tabLayout                         = (TabLayout) findViewById(R.id.tabLayout);
+
+        // Set up the ViewPager with the sections adapter.
+        mViewPager.setAdapter(mSectionsPagerAdapter);
+
+        // Config and set up the TabLayout with the ViewPager.
+        tabLayout.setTabMode(TabLayout.MODE_FIXED);
+        tabLayout.setupWithViewPager(mViewPager);
+    }
+
+    /**
+     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
+     * one of the sections/tabs/pages.
+     */
+    public class SectionsPagerAdapter extends FragmentPagerAdapter {
+
+        public SectionsPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            // getItem is called to instantiate the fragment for the given page.
+            switch (position) {
+                case 0  : return ArticlesFragment.newInstance();
+//                case 1  : return FavoritesFragment.newInstance();
+                default : return ArticlesFragment.newInstance();
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return sections.length;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return sections[position];
+        }
+    }
+}
