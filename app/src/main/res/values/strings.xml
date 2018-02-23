@@ -19,5 +19,6 @@
     <string name="articles_description_hint">Descripción...</string>
     <string name="articles_author_hint">Autor</string>
     <string name="articles_published_hint">Fecha</string>
+    <string name="title_activity_splash">SplashActivity</string>
 
 </resources>
