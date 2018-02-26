@@ -52,8 +52,8 @@ public class MainActivity extends AppCompatActivity implements ArticlesFragment.
     }
 
     @Override
-    public void showSnackbarUrlEmpty() {
-        Snackbar.make(coordinatorlayout, getString(R.string.article_empty_url), Snackbar.LENGTH_LONG).show();
+    public void showSnackbar(String message) {
+        Snackbar.make(coordinatorlayout, message, Snackbar.LENGTH_LONG).show();
     }
 
     /**

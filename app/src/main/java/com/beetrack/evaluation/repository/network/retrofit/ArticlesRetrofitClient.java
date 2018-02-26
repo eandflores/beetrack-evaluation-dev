@@ -1,7 +1,7 @@
-package com.beetrack.evaluation.network.retrofit;
+package com.beetrack.evaluation.repository.network.retrofit;
 
 
-import com.beetrack.evaluation.network.Constants;
+import com.beetrack.evaluation.repository.network.Constants;
 
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
@@ -10,15 +10,15 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public abstract class ArticlesRetrofitClient {
 
-  private ArticlesRetrofitService articlesRetrofitService;
+  private ArticlesRetrofitService articlesService;
 
   public ArticlesRetrofitClient() {
     initRetrofit();
   }
 
   private void initRetrofit() {
-    Retrofit retrofit = retrofitBuilder();
-    articlesRetrofitService = retrofit.create(getArticlesServiceClass());
+    Retrofit retrofit       = retrofitBuilder();
+    articlesService = retrofit.create(getArticlesServiceClass());
   }
 
   private Retrofit retrofitBuilder() {
@@ -42,7 +42,7 @@ public abstract class ArticlesRetrofitClient {
   }
 
   protected ArticlesRetrofitService getArticlesService() {
-    return articlesRetrofitService;
+    return articlesService;
   }
 }
 

@@ -20,5 +20,6 @@
     <string name="articles_published_hint">Fecha</string>
 
     <string name="article_empty_url">Lo sentimos, el vínculo está roto, inténtalo mas tarde</string>
+    <string name="article_empty_title">Lo sentimos, la noticia está incompleta, inténtalo mas tarde</string>
 
 </resources>

@@ -28,8 +28,9 @@ import android.widget.TextView;
 import com.beetrack.evaluation.R;
 import com.beetrack.evaluation.interactor.ArticlesInteractor;
 import com.beetrack.evaluation.model.Article;
-import com.beetrack.evaluation.network.client.ArticlesClient;
 import com.beetrack.evaluation.presenter.ArticlesPresenter;
+import com.beetrack.evaluation.repository.network.client.ArticlesNetworkClient;
+import com.beetrack.evaluation.repository.persistence.ArticlesPersistenceClient;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +41,7 @@ import butterknife.ButterKnife;
 /**
  * A fragment representing a list of Items.
  */
-public class ArticlesFragment extends Fragment implements ArticlesPresenter.View, SearchView.OnQueryTextListener {
+public class ArticlesFragment extends Fragment implements ArticlesPresenter.View, SearchView.OnQueryTextListener, ArticlesAdapter.ArticleClickListener {
 
     @BindView(R.id.swiperefreshlayout) SwipeRefreshLayout swiperefreshlayout;
     @BindView(R.id.recyclerview) RecyclerView recyclerview;
@@ -53,7 +54,7 @@ public class ArticlesFragment extends Fragment implements ArticlesPresenter.View
     private static final String ARG_IS_FAVORITE = "arg_is_favorite";
     private static final String PACKAGE_NAME    = "com.android.chrome";
 
-    private boolean isFavorite;
+    private boolean isFavoriteSection;
     private SearchView searchView;
     private List<Article> articles;
 
@@ -79,7 +80,7 @@ public class ArticlesFragment extends Fragment implements ArticlesPresenter.View
         setHasOptionsMenu(true);
 
         if (getArguments() != null)
-            isFavorite = getArguments().getBoolean(ARG_IS_FAVORITE);
+            isFavoriteSection = getArguments().getBoolean(ARG_IS_FAVORITE);
     }
 
     @Override
@@ -94,10 +95,19 @@ public class ArticlesFragment extends Fragment implements ArticlesPresenter.View
         ButterKnife.bind(this, view);
         setupRecyclerView();
 
-        articlesPresenter = new ArticlesPresenter(new ArticlesInteractor(new ArticlesClient()));
+        articlesPresenter = new ArticlesPresenter(new ArticlesInteractor(new ArticlesNetworkClient(), new ArticlesPersistenceClient()));
         articlesPresenter.setView(this);
 
-        articlesPresenter.getArticles(isFavorite);
+        articlesPresenter.getArticles(isFavoriteSection);
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if(articlesPresenter != null) {
+            if(isVisibleToUser)
+                articlesPresenter.getArticles(isFavoriteSection);
+        }
     }
 
     @Override
@@ -118,11 +128,16 @@ public class ArticlesFragment extends Fragment implements ArticlesPresenter.View
 
     private void setupRecyclerView() {
         ArticlesAdapter adapter = new ArticlesAdapter(context());
-        adapter.setItemClickListener(this::launchArticleDetail);
+        adapter.setItemClickListener(this);
         recyclerview.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerview.setAdapter(adapter);
 
-        swiperefreshlayout.setOnRefreshListener(() -> articlesPresenter.getArticles(isFavorite));
+        swiperefreshlayout.setOnRefreshListener(() -> {
+            if(searchView != null)
+                searchView.setQuery("",true);
+
+            articlesPresenter.getArticles(isFavoriteSection);
+        });
     }
 
     private void setupSearchView(Menu menu) {
@@ -133,13 +148,31 @@ public class ArticlesFragment extends Fragment implements ArticlesPresenter.View
         searchView.setOnQueryTextListener(this);
     }
 
+    @Override
+    public void onItemClick(String articleUrl) {
+        launchArticleDetail(articleUrl);
+    }
+
+    @Override
+    public void onStarClick(String title, boolean isFavorite) {
+        if(title != null) {
+            if(!isFavorite)
+                articlesPresenter.addArticleToFavorite(title.hashCode(), isFavoriteSection);
+            else
+                articlesPresenter.deleteArticleFromFavorite(title.hashCode(),isFavoriteSection);
+        } else {
+            if (mListener != null)
+                mListener.showSnackbar(getString(R.string.article_empty_title));
+        }
+    }
+
     public void launchArticleDetail(String url) {
         if(!TextUtils.isEmpty(url)) {
             warmUpChrome();
             setupWebView(url);
         } else {
             if (mListener != null)
-                mListener.showSnackbarUrlEmpty();
+                mListener.showSnackbar(getString(R.string.article_empty_url));
         }
     }
 
@@ -261,7 +294,6 @@ public class ArticlesFragment extends Fragment implements ArticlesPresenter.View
     @Override
     public void renderArticles(List<Article> articles) {
         textview.setVisibility(View.GONE);
-        searchView.setQuery("",true);
 
         this.articles           = articles;
         ArticlesAdapter adapter = (ArticlesAdapter) recyclerview.getAdapter();
@@ -271,6 +303,6 @@ public class ArticlesFragment extends Fragment implements ArticlesPresenter.View
     }
 
     public interface OnArticlesFragmentInteractionListener {
-        void showSnackbarUrlEmpty();
+        void showSnackbar(String message);
     }
 }

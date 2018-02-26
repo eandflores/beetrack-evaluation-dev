@@ -1,4 +1,4 @@
-package com.beetrack.evaluation.network.client;
+package com.beetrack.evaluation.repository.network.client;
 
 import com.beetrack.evaluation.model.Articles;
 
@@ -8,6 +8,6 @@ import io.reactivex.Observable;
  * Created by edgardo on 2/22/18.
  */
 
-public interface ArticlesService {
+public interface ArticlesNetworkService {
     Observable<Articles> getArticles();
 }

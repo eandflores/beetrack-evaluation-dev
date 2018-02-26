@@ -6,7 +6,8 @@ package com.beetrack.evaluation.presenter;
 
 import com.beetrack.evaluation.interactor.ArticlesInteractor;
 import com.beetrack.evaluation.model.Article;
-import com.beetrack.evaluation.network.Constants;
+import com.beetrack.evaluation.repository.network.Constants;
+import com.beetrack.evaluation.utils.Utils;
 
 import java.util.List;
 
@@ -24,22 +25,53 @@ public class ArticlesPresenter extends Presenter<ArticlesPresenter.View> {
         getView().showLoading();
 
         if(!isFavorite) {
-            Disposable disposable = interactor.getArticles().subscribe(articles -> {
-                if(articles.getStatus().equals(Constants.SUCCESS_RESPONSE)) {
-                    if (articles.getTotalResults() > 0) {
-                        getView().hideLoading();
-                        getView().renderArticles(articles.getArticles());
-                    } else {
+            Utils utils = new Utils();
+            if(utils.isOnline(this.getView().context())) {
+                Disposable disposable = interactor.getArticles().subscribe(articles -> {
+                    if(articles.getStatus().equals(Constants.SUCCESS_RESPONSE)) {
+                        interactor.deleteArticles();
+                        interactor.saveArticles(articles.getArticles());
+                        renderArticles(interactor.getArticlesCache());
+                    } else
                         getView().showArticleNotFoundMessage();
-                    }
-                } else
-                    getView().showArticleNotFoundMessage();
 
-            }, Throwable::printStackTrace);
+                }, Throwable::printStackTrace);
 
-            addDisposableObserver(disposable);
+                addDisposableObserver(disposable);
+            } else
+                renderArticles(interactor.getArticlesCache());
+        } else
+            renderArticles(interactor.getFavorites());
+    }
+
+    private void renderArticles(List<Article> articles) {
+        if (articles.size() > 0) {
+            getView().hideLoading();
+            getView().renderArticles(articles);
         } else
             getView().showArticleNotFoundMessage();
+    }
+
+    public void addArticleToFavorite(int articleId, boolean isFavorite) {
+        getView().showLoading();
+
+        interactor.addArticleToFavorites(articleId);
+
+        if(!isFavorite)
+            renderArticles(interactor.getArticlesCache());
+        else
+            renderArticles(interactor.getFavorites());
+    }
+
+    public void deleteArticleFromFavorite(int articleId, boolean isFavorite) {
+        getView().showLoading();
+
+        interactor.deleteArticleFromFavorites(articleId);
+
+        if(!isFavorite)
+            renderArticles(interactor.getArticlesCache());
+        else
+            renderArticles(interactor.getFavorites());
     }
 
     @Override

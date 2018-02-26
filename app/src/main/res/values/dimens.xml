@@ -8,5 +8,5 @@
     <dimen name="text_margin">16dp</dimen>
     <dimen name="card_elevation">4dp</dimen>
     <dimen name="articles_imageview_height">200dp</dimen>
-    <dimen name="articles_star_size">25dp</dimen>
+    <dimen name="articles_star_size">40dp</dimen>
 </resources>

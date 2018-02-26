@@ -22,13 +22,13 @@ import butterknife.ButterKnife;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link Article} and makes a call to the
- * specified {@link ItemClickListener}.
+ * specified {@link ArticleClickListener}.
  */
 public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.ViewHolder> {
 
     private Context context;
     private List<Article> articles;
-    private ItemClickListener itemClickListener;
+    private ArticleClickListener itemClickListener;
 
     public ArticlesAdapter(Context context) {
         this.context    = context;
@@ -81,20 +81,19 @@ public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.ViewHo
                 textviewPublished.setText(df.format("yyyy-MM-dd HH:mm", article.getPublishedAt()));
             }
 
-            if(true)
+            if(article.isFavorite())
                 imageviewStar.setImageDrawable(context.getResources().getDrawable(android.R.drawable.btn_star_big_on));
             else
                 imageviewStar.setImageDrawable(context.getResources().getDrawable(android.R.drawable.btn_star_big_off));
 
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (null != itemClickListener) {
-                        // Notify the active callbacks interface (the activity, if the
-                        // fragment is attached to one) that an item has been selected.
-                        itemClickListener.onItemClick(article.getUrl());
-                    }
-                }
+            imageviewStar.setOnClickListener(v -> {
+                if (null != itemClickListener)
+                    itemClickListener.onStarClick(article.getTitle(), article.isFavorite());
+            });
+
+            itemView.setOnClickListener(v -> {
+                if (null != itemClickListener)
+                    itemClickListener.onItemClick(article.getUrl());
             });
         }
     }
@@ -104,20 +103,17 @@ public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.ViewHo
         return articles.size();
     }
 
-    public List<Article> getArticles() {
-        return this.articles;
-    }
-
     public void setArticles(List<Article> articles) {
         this.articles = articles;
     }
 
-    public void setItemClickListener(ItemClickListener itemClickListener) {
+    public void setItemClickListener(ArticleClickListener itemClickListener) {
         this.itemClickListener = itemClickListener;
     }
 
-    public interface ItemClickListener {
-        void onItemClick(String article);
+    public interface ArticleClickListener {
+        void onItemClick(String articleUrl);
+        void onStarClick(String title, boolean isFavorite);
     }
 
     public void animateTo(List<Article> models) {

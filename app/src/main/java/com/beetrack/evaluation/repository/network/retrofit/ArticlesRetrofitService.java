@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.beetrack.evaluation.network;
+package com.beetrack.evaluation.repository.network.retrofit;
 
-public class Constants {
+import com.beetrack.evaluation.model.Articles;
+import com.beetrack.evaluation.repository.network.Constants;
+import io.reactivex.Observable;
+import retrofit2.http.GET;
 
-  public static final String ARTICLES_API     = "https://newsapi.org";
-  public static final String SUCCESS_RESPONSE = "ok";
+public interface ArticlesRetrofitService {
 
-  public static final class Endpoint {
-    public static final String GET_ARTICLES   = "/v2/top-headlines?country=us&category=business&apiKey=e8df71c5f5834ca3aeb5bceec66825e9";
-  }
+  @GET(Constants.Endpoint.GET_ARTICLES) Observable<Articles> getArticles();
 }
